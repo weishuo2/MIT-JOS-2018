@@ -7,14 +7,14 @@
 
 
 static void
-putch(int ch, int *cnt)
+putch(int ch, int *cnt)//调用了console中的cputchar
 {
 	cputchar(ch);
 	*cnt++;
 }
 
 int
-vcprintf(const char *fmt, va_list ap)
+vcprintf(const char *fmt, va_list ap)// 调用了\lib\printfmt.c 中的vprintfmt
 {
 	int cnt = 0;
 
@@ -23,7 +23,7 @@ vcprintf(const char *fmt, va_list ap)
 }
 
 int
-cprintf(const char *fmt, ...)
+cprintf(const char *fmt, ...)// 调用了\lib\printfmt.c 中的vprintfmt
 {
 	va_list ap;
 	int cnt;

@@ -3,7 +3,7 @@
 #include <inc/memlayout.h>
 #include <inc/assert.h>
 
-#include <kern/kdebug.h>//xixixxixi
+#include <kern/kdebug.h>
 
 extern const struct Stab __STAB_BEGIN__[];	// Beginning of stabs table
 extern const struct Stab __STAB_END__[];	// End of stabs table

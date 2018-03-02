@@ -12,8 +12,7 @@ static void cons_intr(int (*proc)(void));
 static void cons_putc(int c);
 
 // Stupid I/O delay routine necessitated by historical PC design flaws
-static void 
-
+static void
 delay(void)
 {
 	inb(0x84);
@@ -59,7 +58,6 @@ serial_proc_data(void)
 void
 serial_intr(void)
 {
-	int i;
 	if (serial_exists)
 		cons_intr(serial_proc_data);
 }
@@ -432,7 +430,7 @@ cons_getc(void)
 	return 0;
 }
 
-// output a character to the console
+// 在显示屏上显示一个字母
 static void
 cons_putc(int c)
 {

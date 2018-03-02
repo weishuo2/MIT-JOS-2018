@@ -86,6 +86,7 @@ PERL	:= perl
 CFLAGS := $(CFLAGS) $(DEFS) $(LABDEFS) -O1 -fno-builtin -I$(TOP) -MD
 CFLAGS += -fno-omit-frame-pointer
 CFLAGS += -std=gnu99
+CFLAGS += -static
 CFLAGS += -Wall -Wno-format -Wno-unused -Werror -gstabs -m32
 # -fno-tree-ch prevented gcc from sometimes reordering read_ebp() before
 # mon_backtrace()'s function prologue on gcc version: (Debian 4.7.2-5) 4.7.2
@@ -301,6 +302,14 @@ myapi.key:
 		false; \
 	fi;
 
+warn:
+	@echo; \
+	echo "[31m******* WARNING *********"; \
+	echo "this is the 2016 6.828 lab"; \
+	echo "******* WARNING ********* [39m"; \
+	echo;\
+	#false;
+
 #handin-prep:
 #	@./handin-prep
 
@@ -319,4 +328,5 @@ always:
 	@:
 
 .PHONY: all always \
-	handin git-handin tarball tarball-pref clean realclean distclean grade handin-prep handin-check
+	handin git-handin tarball tarball-pref clean realclean distclean grade handin-prep handin-check \
+	warn

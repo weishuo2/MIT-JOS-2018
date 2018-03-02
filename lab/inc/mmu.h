@@ -2,6 +2,7 @@
 #define JOS_INC_MMU_H
 
 /*
+ * MMU
  * This file contains definitions for the x86 memory management unit (MMU),
  * including paging- and segmentation-related data structures and constants,
  * the %cr0, %cr4, and %eflags registers, and traps.
@@ -13,7 +14,7 @@
  *
  */
 
-// A linear address 'la' has a three-part structure as follows:
+//线性地址有以下三部分：
 //
 // +--------10------+-------10-------+---------12----------+
 // | Page Directory |   Page Table   | Offset within Page  |
@@ -29,13 +30,13 @@
 // page number field of address
 #define PGNUM(la)	(((uintptr_t) (la)) >> PTXSHIFT)
 
-// page directory index
+// 据虚拟地址求页目录项地址    dir
 #define PDX(la)		((((uintptr_t) (la)) >> PDXSHIFT) & 0x3FF)
 
-// page table index
+//据虚拟地址求页表项地址    table
 #define PTX(la)		((((uintptr_t) (la)) >> PTXSHIFT) & 0x3FF)
 
-// offset in page
+//据虚拟地址求偏移量
 #define PGOFF(la)	(((uintptr_t) (la)) & 0xFFF)
 
 // construct linear address from indexes and offset
@@ -48,16 +49,16 @@
 #define PGSIZE		4096		// bytes mapped by a page
 #define PGSHIFT		12		// log2(PGSIZE)
 
-#define PTSIZE		(PGSIZE*NPTENTRIES) // bytes mapped by a page directory entry
+#define PTSIZE		(PGSIZE*NPTENTRIES) // 由页面目录条目映射的字节
 #define PTSHIFT		22		// log2(PTSIZE)
 
 #define PTXSHIFT	12		// offset of PTX in a linear address
-#define PDXSHIFT	22		// offset of PDX in a linear address
+#define PDXSHIFT	22		// offset of PDX in 线性地址
 
-// Page table/directory entry flags.
-#define PTE_P		0x001	// Present
-#define PTE_W		0x002	// Writeable
-#define PTE_U		0x004	// User
+// 页表/目录入口标志
+#define PTE_P		0x001	//是否存在
+#define PTE_W		0x002	//可写入
+#define PTE_U		0x004	//用户有权限读
 #define PTE_PWT		0x008	// Write-Through
 #define PTE_PCD		0x010	// Cache-Disable
 #define PTE_A		0x020	// Accessed
@@ -72,10 +73,10 @@
 // Flags in PTE_SYSCALL may be used in system calls.  (Others may not.)
 #define PTE_SYSCALL	(PTE_AVAIL | PTE_P | PTE_W | PTE_U)
 
-// Address in page table or page directory entry
+// 页表或页表目录中的地址,將页表目录项后12位全置为0获得对应页表项物理地址
 #define PTE_ADDR(pte)	((physaddr_t) (pte) & ~0xFFF)
 
-// Control Register flags
+// 控制寄存器标志
 #define CR0_PE		0x00000001	// Protection Enable
 #define CR0_MP		0x00000002	// Monitor coProcessor
 #define CR0_EM		0x00000004	// Emulation

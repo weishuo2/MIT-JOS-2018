@@ -59,20 +59,24 @@ int
 mon_backtrace(int argc, char **argv, struct Trapframe *tf)
 {
 	// Your code here.
+	//int x = 1, y = 3, z = 4;
+	//cprintf("x %d, y %x, z %d\n", x, y, z);
 	uint32_t ebp, *ptr_ebp;
 	struct Eipdebuginfo info;
-	ebp = read_ebp();
+	ebp = read_ebp();//读取当前ebp
 	cprintf("Stack backtrace:\n");
-	while (ebp != 0) 
+	while (ebp != 0)//一直循环到ebp最开始的地方 
 	{
 		ptr_ebp = (uint32_t *)ebp;
 		cprintf("ebp %x  eip %x  args %08x %08x %08x %08x %08x\n", 
 			ebp, ptr_ebp[1], ptr_ebp[2], ptr_ebp[3], ptr_ebp[4], ptr_ebp[5], ptr_ebp[6]);
-		if (debuginfo_eip(ptr_ebp[1], &info) == 0) 
+		if (debuginfo_eip(ptr_ebp[1], &info) == 0) //查找有无该eip对应的函数
 		{
-			uint32_t fn_offset = ptr_ebp[1] - info.eip_fn_addr;
+			uint32_t fn_offset = ptr_ebp[1] - info.eip_fn_addr;//在源文件中的偏移地址
 			cprintf("%s:%d: %.*s+%d\n", info.eip_file, info.eip_line,info.eip_fn_namelen,  info.eip_fn_name, fn_offset);
 		}
+		else 
+			return -1;
 		ebp = *ptr_ebp;
 	}
 	return 0;

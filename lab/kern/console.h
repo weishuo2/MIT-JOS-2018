@@ -8,7 +8,6 @@
 
 #include <inc/types.h>
 
-
 #define MONO_BASE	0x3B4
 #define MONO_BUF	0xB0000
 #define CGA_BASE	0x3D4

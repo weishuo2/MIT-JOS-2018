@@ -79,10 +79,10 @@ getint(va_list *ap, int lflag)
 
 // Main function to format and print a string.打印字符串
 void printfmt(void (*putch)(int, void*), void *putdat, const char *fmt, ...);
-
+//依赖于cputchar
 void
 vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap)
-{
+{//第一个参数是函数指针，第二个参数是输入字符存放在内存地址的指针，第三个类似printf的第一个参数，第四个类似printf后面的所有变量
 	register const char *p;
 	register int ch, err;
 	unsigned long long num;
@@ -210,7 +210,6 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap)
 			num = getuint(&ap,lflag);
 			base = 8;
 			goto number;
-			break;
 
 		// pointer
 		case 'p':
