@@ -12,12 +12,12 @@
  * which are relevant to both the kernel and user-mode software.
  */
 
-// Global descriptor numbers
+// 全局描述符编号
 #define GD_KT     0x08     // kernel text
 #define GD_KD     0x10     // kernel data
 #define GD_UT     0x18     // user text
 #define GD_UD     0x20     // user data
-#define GD_TSS0   0x28     // Task segment selector for CPU 0
+#define GD_TSS0   0x28     // 任务段选择器 for CPU 0
 
 /*
  * 虚拟内存映射                                          权限
@@ -140,26 +140,22 @@
 // The location of the user-level STABS data structure
 #define USTABDATA	(PTSIZE / 2)
 
+// Physical address of startup code for non-boot CPUs (APs)
+#define MPENTRY_PADDR	0x7000
+
 #ifndef __ASSEMBLER__
 
 typedef uint32_t pte_t;
 typedef uint32_t pde_t;
 
 #if JOS_USER
-/*
- * The page directory entry corresponding to the virtual address range
- * [UVPT, UVPT + PTSIZE) points to the page directory itself.  Thus, the page
- * directory is treated as a page table as well as a page directory.
- *
- * One result of treating the page directory as a page table is that all PTEs
- * can be accessed through a "virtual page table" at virtual address UVPT (to
- * which uvpt is set in lib/entry.S).  The PTE for page number N is stored in
- * uvpt[N].  (It's worth drawing a diagram of this!)
- *
- * A second consequence is that the contents of the current page directory
- * will always be available at virtual address (UVPT + (UVPT >> PGSHIFT)), to
- * which uvpd is set in lib/entry.S.
- */
+// /*
+//   与虚拟地址范围[UVPT，UVPT + PTSIZE）相对应的页面目录条目指向页面目录本身。 因此，页面目录被视为页面表以及页面目录。
+//  *
+//   将页面目录视为页表的一个结果是，所有PTE都可以通过虚拟地址UVPT（uvpt在lib / entry.S中设置的）上的“虚拟页表”访问。 页码N的PTE存储在uvpt [N]中。 （值得画出这个图！）
+//  *
+//   第二个结果是当前页面目录的内容总是在虚拟地址（UVPT +（UVPT >> PGSHIFT））处可用，uvpd在lib / entry.S中设置。
+// 
 extern volatile pte_t uvpt[];     // VA of "virtual page table"
 extern volatile pde_t uvpd[];     // VA of current page directory
 #endif

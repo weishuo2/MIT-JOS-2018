@@ -250,7 +250,7 @@ read_tsc(void)
 
 static inline uint32_t
 xchg(volatile uint32_t *addr, uint32_t newval)
-{
+{//交换addr和newval的值，并返回addr的值
 	uint32_t result;
 
 	// The + in "+m" denotes a read-modify-write operand.

@@ -58,7 +58,7 @@
 // 页表/目录入口标志
 #define PTE_P		0x001	//是否存在
 #define PTE_W		0x002	//可写入
-#define PTE_U		0x004	//用户有权限读
+#define PTE_U		0x004	//USER
 #define PTE_PWT		0x008	// Write-Through
 #define PTE_PCD		0x010	// Cache-Disable
 #define PTE_A		0x020	// Accessed
@@ -97,7 +97,7 @@
 #define CR4_PVI		0x00000002	// Protected-Mode Virtual Interrupts
 #define CR4_VME		0x00000001	// V86 Mode Extensions
 
-// Eflags register
+// Eflags寄存器
 #define FL_CF		0x00000001	// Carry Flag
 #define FL_PF		0x00000004	// Parity Flag
 #define FL_AF		0x00000010	// Auxiliary carry Flag
@@ -120,7 +120,7 @@
 #define FL_VIP		0x00100000	// Virtual Interrupt Pending
 #define FL_ID		0x00200000	// ID flag
 
-// Page fault error codes
+// 页面错误错误代码
 #define FEC_PR		0x1	// Page fault caused by protection violation
 #define FEC_WR		0x2	// Page fault caused by a write
 #define FEC_U		0x4	// Page fault occured while in user mode
@@ -128,7 +128,7 @@
 
 /*
  *
- *	Part 2.  Segmentation data structures and constants.
+ *	Part 2.  分割数据结构和常量。
  *
  */
 
@@ -166,11 +166,11 @@ struct Segdesc {
 	unsigned sd_base_31_24 : 8; // High bits of segment base address
 };
 // Null segment
-#define SEG_NULL	(struct Segdesc){ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+#define SEG_NULL	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 // Segment that is loadable but faults when used
-#define SEG_FAULT	(struct Segdesc){ 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 }
+#define SEG_FAULT	{ 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 }
 // Normal segment
-#define SEG(type, base, lim, dpl) (struct Segdesc)			\
+#define SEG(type, base, lim, dpl) 					\
 { ((lim) >> 12) & 0xffff, (base) & 0xffff, ((base) >> 16) & 0xff,	\
     type, 1, dpl, 1, (unsigned) (lim) >> 28, 0, 0, 1, 1,		\
     (unsigned) (base) >> 24 }
@@ -253,33 +253,27 @@ struct Taskstate {
 	uint16_t ts_iomb;	// I/O map base address
 };
 
-// Gate descriptors for interrupts and traps
+//中断和陷阱的门描述符
 struct Gatedesc {
-	unsigned gd_off_15_0 : 16;   // low 16 bits of offset in segment
-	unsigned gd_sel : 16;        // segment selector
-	unsigned gd_args : 5;        // # args, 0 for interrupt/trap gates
+	unsigned gd_off_15_0 : 16;   // 段中低16位的偏移量
+	unsigned gd_sel : 16;        // 段选择器
+	unsigned gd_args : 5;        //＃args，0表示中断/陷阱门
 	unsigned gd_rsv1 : 3;        // reserved(should be zero I guess)
 	unsigned gd_type : 4;        // type(STS_{TG,IG32,TG32})
 	unsigned gd_s : 1;           // must be 0 (system)
-	unsigned gd_dpl : 2;         // descriptor(meaning new) privilege level
+	unsigned gd_dpl : 2;         // 描述符（意思是新的）特权级别
 	unsigned gd_p : 1;           // Present
-	unsigned gd_off_31_16 : 16;  // high bits of offset in segment
+	unsigned gd_off_31_16 : 16;  // 段中高16位的偏移量
 };
 
-// Set up a normal interrupt/trap gate descriptor.
-// - istrap: 1 for a trap (= exception) gate, 0 for an interrupt gate.
-    //   see section 9.6.1.3 of the i386 reference: "The difference between
-    //   an interrupt gate and a trap gate is in the effect on IF (the
-    //   interrupt-enable flag). An interrupt that vectors through an
-    //   interrupt gate resets IF, thereby preventing other interrupts from
-    //   interfering with the current interrupt handler. A subsequent IRET
-    //   instruction restores IF to the value in the EFLAGS image on the
-    //   stack. An interrupt through a trap gate does not change IF."
-// - sel: Code segment selector for interrupt/trap handler
-// - off: Offset in code segment for interrupt/trap handler
-// - dpl: Descriptor Privilege Level -
-//	  the privilege level required for software to invoke
-//	  this interrupt/trap gate explicitly using an int instruction.
+//设置一个正常的中断/陷阱门描述符。
+// - istrap：1表示陷阱（=异常）门，0表示中断门。
+//参见i386参考的第9.6.1.3节：“中断门和陷阱门之间的差异对IF（中断使能标志）有影响。
+//通过中断门引导的中断将复位IF，从而阻止 其他中断干扰当前中断处理程序，
+//随后的IRET指令将IF恢复到堆栈中EFLAGS映像的值，通过陷阱门的中断不会改变IF。
+// - sel：用于中断/陷阱处理程序的代码段选择器
+// - off：中断/陷阱处理程序代码段中的偏移量
+// - dpl：描述符特权级别 - 软件使用int指令显式调用此中断/陷阱门所需的特权级别。
 #define SETGATE(gate, istrap, sel, off, dpl)			\
 {								\
 	(gate).gd_off_15_0 = (uint32_t) (off) & 0xffff;		\
@@ -293,7 +287,7 @@ struct Gatedesc {
 	(gate).gd_off_31_16 = (uint32_t) (off) >> 16;		\
 }
 
-// Set up a call gate descriptor.
+// 设置一个调用门描述符。
 #define SETCALLGATE(gate, sel, off, dpl)           	        \
 {								\
 	(gate).gd_off_15_0 = (uint32_t) (off) & 0xffff;		\
@@ -307,10 +301,10 @@ struct Gatedesc {
 	(gate).gd_off_31_16 = (uint32_t) (off) >> 16;		\
 }
 
-// Pseudo-descriptors used for LGDT, LLDT and LIDT instructions.
+// 用于LGDT，LLDT和LIDT指令的伪描述符。
 struct Pseudodesc {
-	uint16_t pd_lim;		// Limit
-	uint32_t pd_base;		// Base address
+	uint16_t pd_lim;		// 限制16位
+	uint32_t pd_base;		// 基址32位
 } __attribute__ ((packed));
 
 #endif /* !__ASSEMBLER__ */

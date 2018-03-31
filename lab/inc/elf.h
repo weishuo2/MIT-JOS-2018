@@ -9,25 +9,26 @@ struct Elf {
 	uint16_t e_type;
 	uint16_t e_machine;
 	uint32_t e_version;
-	uint32_t e_entry;
-	uint32_t e_phoff;
-	uint32_t e_shoff;
+	uint32_t e_entry;//程序入口地址
+	uint32_t e_phoff;//program header table在文件中的偏移地址
+	//Program header描述的是一个段在文件中的位置、大小以及它被放进内存后所在的位置和大小。
+	uint32_t e_shoff;//section header table在文件中的偏移地址
 	uint32_t e_flags;
-	uint16_t e_ehsize;
-	uint16_t e_phentsize;
-	uint16_t e_phnum;
+	uint16_t e_ehsize;//ELF header的大小
+	uint16_t e_phentsize;//program header table每一个条目大小
+	uint16_t e_phnum;//条目数目
 	uint16_t e_shentsize;
 	uint16_t e_shnum;
 	uint16_t e_shstrndx;
 };
 
 struct Proghdr {
-	uint32_t p_type;
-	uint32_t p_offset;
-	uint32_t p_va;
+	uint32_t p_type;//段的类型
+	uint32_t p_offset;//段的偏移地址
+	uint32_t p_va;//段第一个字节的虚拟地址
 	uint32_t p_pa;
-	uint32_t p_filesz;
-	uint32_t p_memsz;
+	uint32_t p_filesz;//段在文件中的长度
+	uint32_t p_memsz;//段在内存中的长度
 	uint32_t p_flags;
 	uint32_t p_align;
 };
